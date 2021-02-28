@@ -12,7 +12,7 @@ npm install
 npm start
 ```
 
-Now open browser and go to url: http://localhost:3000
+Now open browser and go to url: "http://localhost:3000"
 
 Examples:
 
@@ -26,8 +26,8 @@ query { portList {path}}
 # mutation { closePort(path:"COM5")}
 ```
 
-## Operations supported by GraphQL backend:
+## Operations supported by GraphQL backend
 
-	* List ports
-	* Data stream to the PC from arduino
-	* Data history
+* List ports
+* Data stream to the PC from arduino
+* Data history
