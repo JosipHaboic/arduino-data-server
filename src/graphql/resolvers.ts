@@ -37,13 +37,13 @@ export const resolvers = {
 				return false;
 			}
 		},
-		errors: (root, args, context) => {
+		errors: (root, args, context): {} | null => {
 
-			return errors;
+			return errors.all();
 		},
-		warnings: (root, args, context) => {
+		warnings: (root, args, context): {} | null => {
 
-			return warnings;
+			return warnings.all();
 		},
 		dataBuffer: (root, { path }, context) => {
 			if (allowConsoleLog) {
