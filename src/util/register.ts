@@ -30,6 +30,20 @@ export class Register<T> {
 		return this.register.values();
 	}
 
+	public all(): {} | null {
+		if (this.register.size === 0) {
+			return null;
+		}
+
+		let _register = {};
+
+		this.register.forEach((value: T, key: string, map: Map<string, T>) => {
+			_register[key] = value;
+		});
+
+		return _register;
+	}
+
 	public size(): number {
 		return this.register.size;
 	}
