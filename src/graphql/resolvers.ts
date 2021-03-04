@@ -4,6 +4,7 @@ import CircularBuffer from 'circular-buffer';
 import { v4 as uuidv4 } from 'uuid';
 import { Register } from '../util';
 import { ArduinoData } from '../models/arduinoData';
+import { dateTimeFormatter } from '../util/datetime';
 
 const MAX_HISTORY_SIZE = 32;
 // we can have more than one port open at the same time, so map them by their port path
@@ -16,6 +17,7 @@ let portCurrentDataMap = new Map<String, ArduinoData>();
 let errors = new Register<Error>(uuidv4);
 let warnings = new Register<string>(uuidv4);
 let allowConsoleLog = true;
+
 
 
 export const resolvers = {
@@ -102,6 +104,9 @@ export const resolvers = {
 					let currentData: ArduinoData;
 					try {
 						currentData = JSON.parse(payload.toString().trim()) as ArduinoData;
+
+						currentData.path = path;
+						currentData.timestamp = dateTimeFormatter.format(Date.now());
 
 						portCurrentDataMap.set(path, currentData);
 						let historyData: CircularBuffer = portHistoryDataMap.get(path);

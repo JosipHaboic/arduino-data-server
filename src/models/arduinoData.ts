@@ -8,6 +8,8 @@ export interface PWM {
 };
 
 export interface ArduinoData {
+	path: string,
+	timestamp: string,
 	ADC: ADC,
 	PWM: PWM,
 };

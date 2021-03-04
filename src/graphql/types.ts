@@ -21,6 +21,8 @@ export const typeDefs = gql`
 	}
 
 	type ArduinoData {
+		path: String!
+		timestamp: String!
 		ADC: ADC
 		PWM: PWM
 	}
