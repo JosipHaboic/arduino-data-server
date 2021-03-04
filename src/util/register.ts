@@ -22,4 +22,16 @@ export class Register<T> {
 		return this.register.delete(id);
 	}
 
+	public keys(): IterableIterator<string> {
+		return this.register.keys();
+	}
+
+	public values(): IterableIterator<T> {
+		return this.register.values();
+	}
+
+	public size(): number {
+		return this.register.size;
+	}
+
 }
