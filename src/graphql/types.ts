@@ -62,6 +62,6 @@ export const typeDefs = gql`
 		closePort(path: String!): Boolean
 		setDataBufferSize(size: Int = 32): Boolean
 		deleteMessage(id: String!): Boolean
-		clearMessages(): Int
+		clearMessages: Boolean
 	}
 `
