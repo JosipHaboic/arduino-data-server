@@ -78,10 +78,10 @@ export const resolvers = {
 			}
 
 			if (portMap.has(path) && portMap.get(path).isOpen) {
-				const warning = `Port ${path} is already opened`;
+				const info = `Port ${path} is already opened`;
 
-				if (allowConsoleLog) { console.log(warning); }
-				messages.add(warning, MessageCategories.WARNING);
+				if (allowConsoleLog) { console.log(info); }
+				messages.add(info, MessageCategories.INFO);
 
 				return true;
 			}
