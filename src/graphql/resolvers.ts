@@ -142,7 +142,10 @@ export const resolvers = {
 			try {
 				let mappedPort = portMap.get(path);
 				mappedPort.close();
+
+				const msg = `Port ${path} is closed`;
 				console.log(`Port ${path} is closed`);
+				messages.add(msg, MessageCategories.INFO);
 
 				return true;
 
