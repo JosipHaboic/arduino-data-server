@@ -115,7 +115,7 @@ export const resolvers = {
 
 					} catch (error) {
 						if (allowConsoleLog) { console.log(error); }
-						messages.add(error.message, MessageCategories.ERROR);
+						messages.add(error.message, MessageCategories.DEBUG);
 
 						return false;
 					}
