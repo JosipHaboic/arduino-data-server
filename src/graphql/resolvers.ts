@@ -154,6 +154,9 @@ export const resolvers = {
 
 			}
 		},
+		deleteMessage: (root, { id }, context) => {
+			return messages.delete(id);
+		},
 		clearMessages: (root, args, context) => {
 			messages.clear();
 		}
