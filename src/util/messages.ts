@@ -22,10 +22,6 @@ export class MessageRegister {
 		});
 	}
 
-	// public find(id: string) {
-	// 	return this.register.find((value: any, index: number, obj: any[]) => value.id === id);
-	// }
-
 	public all() {
 		return [...this.register];
 	}

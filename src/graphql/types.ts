@@ -46,7 +46,7 @@ export const typeDefs = gql`
 	type Message {
 		id: String!
 		message: String!
-		type: String!
+		category: String!
 	}
 
 	type Query {
