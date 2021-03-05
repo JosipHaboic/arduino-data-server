@@ -20,7 +20,7 @@ export const typeDefs = gql`
 		dutyCycle: Float
 	}
 
-	type ArduinoData {
+	type Data {
 		path: String!
 		timestamp: String!
 		ADC: ADC
@@ -45,21 +45,23 @@ export const typeDefs = gql`
 
 	type Message {
 		id: String!
-		message: String
+		message: String!
+		type: String!
 	}
 
 	type Query {
 		portList: [PortInfo]
 		isPortOpen(path: String!): Boolean
-		dataBuffer(path: String!): [ArduinoData]
-		currentData(path: String!): ArduinoData
-		errors: [Message]
-		warnings: [Message]
+		dataBuffer(path: String!): [Data]
+		currentData(path: String!): Data
+		messages: [Message]
 	}
 
 	type Mutation {
 		openPort(path: String!, openOptions: OpenOptions, delimiter: String!): Boolean
 		closePort(path: String!): Boolean
 		setDataBufferSize(size: Int = 32): Boolean
+		deleteMessage(id: String!): Boolean
+		clearMessages(): Int
 	}
 `

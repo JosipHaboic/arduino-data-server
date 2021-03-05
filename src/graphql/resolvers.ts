@@ -2,20 +2,19 @@ import SerialPortStream from '@serialport/stream';
 import SerialPort, { PortInfo } from 'serialport';
 import CircularBuffer from 'circular-buffer';
 import { v4 as uuidv4 } from 'uuid';
-import { Register } from '../util';
-import { ArduinoData } from '../models/arduinoData';
+import { MessageRegister } from '../util';
+import { Data, MessageCategories } from '../models';
 import { dateTimeFormatter } from '../util/datetime';
 
 const MAX_HISTORY_SIZE = 32;
 // we can have more than one port open at the same time, so map them by their port path
 let portMap = new Map<String, SerialPortStream>();
 // keeps data records for each open port
-let portHistoryDataMap = new Map<String, CircularBuffer<ArduinoData>>();
+let portHistoryDataMap = new Map<String, CircularBuffer<Data>>();
 // current data incoming from the ports
-let portCurrentDataMap = new Map<String, ArduinoData>();
+let portCurrentDataMap = new Map<String, Data>();
 // errors and warning register, both have id for easier manipulation
-let errors = new Register<Error>(uuidv4);
-let warnings = new Register<string>(uuidv4);
+let messages = new MessageRegister(uuidv4);
 let allowConsoleLog = true;
 
 
@@ -32,18 +31,14 @@ export const resolvers = {
 				return portMap.get(path).isOpen;
 				// catch errors in case the port is not in map for some reason
 			} catch (error) {
-				errors.add(error.message);
+				messages.add(error.message, MessageCategories.ERROR);
 
 				return false;
 			}
 		},
-		errors: (root, args, context) => {
+		messages: (root, args, context) => {
 
-			return errors.all();
-		},
-		warnings: (root, args, context) => {
-
-			return warnings.all();
+			return messages.all();
 		},
 		dataBuffer: (root, { path }, context) => {
 			if (allowConsoleLog) {
@@ -64,7 +59,7 @@ export const resolvers = {
 				return portCurrentDataMap.get(path);
 			} catch (error) {
 				if (allowConsoleLog) { console.log(error); }
-				errors.add(error.message);
+				messages.add(error.message, MessageCategories.ERROR);
 
 				return null;
 			}
@@ -76,7 +71,7 @@ export const resolvers = {
 			const portList = await SerialPort.list();
 			if ((portList.length !== 0) && (path in SerialPort.list())) {
 				const warning = `Serial port ${path} not existing or not available.`;
-				warnings.add(warning);
+				messages.add(warning, MessageCategories.WARNING);
 				if (allowConsoleLog) { console.log(warning); }
 
 				return false;
@@ -86,7 +81,7 @@ export const resolvers = {
 				const warning = `Port ${path} is already opened`;
 
 				if (allowConsoleLog) { console.log(warning); }
-				warnings.add(warning);
+				messages.add(warning, MessageCategories.WARNING);
 
 				return true;
 			}
@@ -103,10 +98,10 @@ export const resolvers = {
 				}
 
 				parser.on('data', (payload: Buffer) => {
-					let currentData: ArduinoData;
+					let currentData: Data;
 
 					try {
-						currentData = JSON.parse(payload.toString().trim()) as ArduinoData;
+						currentData = JSON.parse(payload.toString().trim()) as Data;
 
 						currentData.path = path;
 						currentData.timestamp = dateTimeFormatter.format(Date.now());
@@ -120,7 +115,7 @@ export const resolvers = {
 
 					} catch (error) {
 						if (allowConsoleLog) { console.log(error); }
-						errors.add(error.message);
+						messages.add(error.message, MessageCategories.ERROR);
 
 						return false;
 					}
@@ -128,13 +123,15 @@ export const resolvers = {
 
 				parser.on('error', (error) => {
 					console.log(error);
-					errors.add(error);
+					messages.add(error.message, MessageCategories.ERROR);
 				});
 
 			});
 
 			if (allowConsoleLog) {
-				console.log(`Port ${path} is ready`);
+				const msg = `Port ${path} is ready`;
+				console.log(msg);
+				messages.add(msg, MessageCategories.INFO);
 			}
 
 			portMap.set(path, port);
@@ -151,11 +148,14 @@ export const resolvers = {
 
 			} catch (error) {
 				console.log(error);
-				errors.add(error.message);
+				messages.add(error.message, MessageCategories.ERROR);
 
 				return false;
 
 			}
 		},
+		clearMessages: (root, args, context) => {
+			messages.clear();
+		}
 	},
 };

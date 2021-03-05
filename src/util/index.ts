@@ -1,3 +1,3 @@
 
-export * from './register';
+export * from './messages';
 export * from './datetime';
