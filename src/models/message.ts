@@ -1,5 +1,5 @@
 export enum MessageCategories {
-	WARNING = 'debug',
+	WARNING = 'warning',
 	ERROR = 'error',
 	INFO = 'info',
 	DEBUG = 'debug',
