@@ -32,16 +32,16 @@ export const resolvers = {
 				return portMap.get(path).isOpen;
 				// catch errors in case the port is not in map for some reason
 			} catch (error) {
-				errors.add(error);
+				errors.add(error.message);
 
 				return false;
 			}
 		},
-		errors: (root, args, context): {} | null => {
+		errors: (root, args, context) => {
 
 			return errors.all();
 		},
-		warnings: (root, args, context): {} | null => {
+		warnings: (root, args, context) => {
 
 			return warnings.all();
 		},
@@ -64,7 +64,7 @@ export const resolvers = {
 				return portCurrentDataMap.get(path);
 			} catch (error) {
 				if (allowConsoleLog) { console.log(error); }
-				errors.add(error);
+				errors.add(error.message);
 
 				return null;
 			}
@@ -97,11 +97,14 @@ export const resolvers = {
 			port.pipe(parser);
 
 			port.on('open', () => {
+
 				if (!portHistoryDataMap.has(port)) {
 					portHistoryDataMap.set(path, new CircularBuffer(MAX_HISTORY_SIZE));
 				}
+
 				parser.on('data', (payload: Buffer) => {
 					let currentData: ArduinoData;
+
 					try {
 						currentData = JSON.parse(payload.toString().trim()) as ArduinoData;
 
@@ -117,7 +120,7 @@ export const resolvers = {
 
 					} catch (error) {
 						if (allowConsoleLog) { console.log(error); }
-						errors.add(error);
+						errors.add(error.message);
 
 						return false;
 					}
@@ -148,7 +151,7 @@ export const resolvers = {
 
 			} catch (error) {
 				console.log(error);
-				errors.add(error);
+				errors.add(error.message);
 
 				return false;
 

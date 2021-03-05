@@ -43,10 +43,9 @@ export const typeDefs = gql`
 	  	highWaterMark: Int = 65536
 	}
 
-	type Error {
-		name: String!
-		message: String!
-		stack: String
+	type Message {
+		id: String!
+		message: String
 	}
 
 	type Query {
@@ -54,8 +53,8 @@ export const typeDefs = gql`
 		isPortOpen(path: String!): Boolean
 		dataBuffer(path: String!): [ArduinoData]
 		currentData(path: String!): ArduinoData
-		errors: [Error]
-		warnings: [String]
+		errors: [Message]
+		warnings: [Message]
 	}
 
 	type Mutation {
