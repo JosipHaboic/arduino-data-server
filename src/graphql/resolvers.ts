@@ -128,6 +128,8 @@ export const resolvers = {
 
 			});
 
+			await port.open();
+
 			if (allowConsoleLog) {
 				const msg = `Port ${path} is ready`;
 				console.log(msg);
@@ -139,23 +141,27 @@ export const resolvers = {
 			return true;
 		},
 		closePort: (root, { path }, context) => {
-			try {
-				let mappedPort = portMap.get(path);
-				mappedPort.close();
+			let mappedPort = portMap.get(path);
+
+			if (mappedPort !== null) {
+				try {
+					mappedPort.close();
+				} catch (error) {
+					console.log(error);
+					messages.add(error.message, MessageCategories.ERROR);
+
+					return false;
+
+				}
 
 				const msg = `Port ${path} is closed`;
-				console.log(`Port ${path} is closed`);
+				console.log(msg);
 				messages.add(msg, MessageCategories.INFO);
 
 				return true;
-
-			} catch (error) {
-				console.log(error);
-				messages.add(error.message, MessageCategories.ERROR);
-
-				return false;
-
 			}
+
+			return false;
 		},
 		deleteMessage: (root, { id }, context) => {
 			return messages.delete(id);
