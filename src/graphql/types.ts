@@ -14,7 +14,7 @@ export const typeDefs = gql`
 	type PortData {
 		path: String!
 		timestamp: String!
-		data: String
+		data: String!
 	}
 
 	input OpenOptions {

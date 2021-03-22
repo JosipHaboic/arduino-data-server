@@ -26,7 +26,7 @@ export const resolvers = {
 
 			return portList;
 		},
-		isPortOpen: ({ path }): Boolean => {
+		isPortOpen: (root, { path }, context): Boolean => {
 			try {
 				return portMap.get(path).isOpen;
 				// catch errors in case the port is not in map for some reason
@@ -40,7 +40,7 @@ export const resolvers = {
 
 			return messages.all();
 		},
-		dataBuffer: ({ path }) => {
+		dataBuffer: (root, { path }, context) => {
 			if (allowConsoleLog) {
 				console.log(path);
 				console.log(portDataBufferMap);
@@ -53,9 +53,8 @@ export const resolvers = {
 				return [];
 			}
 		},
-		currentData: ({ path }) => {
+		currentData: (root, { path }, context) => {
 			try {
-
 				return portCurrentDataMap.get(path);
 			} catch (error) {
 				if (allowConsoleLog) { console.log(error); }
@@ -66,7 +65,7 @@ export const resolvers = {
 		},
 	},
 	Mutation: {
-		openPort: async ({ path, openOptions, delimiter }) => {
+		openPort: async (root, { path, openOptions, delimiter }, context) => {
 
 			const portList = await SerialPort.list();
 			if ((portList.length !== 0) && (path in SerialPort.list())) {
@@ -77,7 +76,7 @@ export const resolvers = {
 				return false;
 			}
 
-			if (portMap.has(path) && portMap.get(path).isOpen) {
+			if (portMap.has(path) && (portMap.get(path).isOpen)) {
 				const info = `Port ${path} is already opened`;
 
 				if (allowConsoleLog) { console.log(info); }
@@ -97,15 +96,14 @@ export const resolvers = {
 					portDataBufferMap.set(path, new CircularBuffer(MAX_HISTORY_SIZE));
 				}
 
-				parser.on('PortData', (payload: Buffer) => {
-					let currentData: PortData;
-
+				parser.on('data', (payload: Buffer) => {
+					// currentData = JSON.parse(payload.toString().trim()) as PortData;
 					try {
-						// currentData = JSON.parse(payload.toString().trim()) as PortData;
-						currentData = {data: payload.toString().trim()} as PortData;
-
-						currentData.path = path;
-						currentData.timestamp = dateTimeFormatter.format(Date.now());
+						let currentData = {
+							data: payload.toString().trim(),
+							path: path,
+							timestamp: dateTimeFormatter.format(Date.now())
+						} as PortData;
 
 						portCurrentDataMap.set(path, currentData);
 						let historyData: CircularBuffer = portDataBufferMap.get(path);
@@ -129,7 +127,8 @@ export const resolvers = {
 
 			});
 
-			await port.open();
+			// this made me go nuts, just pass empty "error" handler
+			await port.open(() => { return true; });
 
 			if (allowConsoleLog) {
 				const msg = `Port ${path} is ready`;
@@ -141,12 +140,12 @@ export const resolvers = {
 
 			return true;
 		},
-		closePort: ({ path }) => {
+		closePort: (root, { path }, context) => {
 			let mappedPort = portMap.get(path);
 
 			if (mappedPort !== null) {
 				try {
-					mappedPort.close();
+					mappedPort.close(() => {});
 				} catch (error) {
 					console.log(error);
 					messages.add(error.message, MessageCategories.ERROR);
@@ -164,7 +163,7 @@ export const resolvers = {
 
 			return false;
 		},
-		deleteMessage: ({ id }) => {
+		deleteMessage: (root, { id }, context) => {
 			return messages.delete(id);
 		},
 		clearMessages: () => {
