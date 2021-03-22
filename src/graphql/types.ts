@@ -11,20 +11,19 @@ export const typeDefs = gql`
 		productId: String
 	}
 
-	type ADC {
-		vin: Float
-		vout: Float
-	}
+	# type ADC {
+	# 	vin: Float
+	# 	vout: Float
+	# }
 
-	type PWM {
-		dutyCycle: Float
-	}
+	# type PWM {
+	# 	dutyCycle: Float
+	# }
 
-	type Data {
+	type PortData {
 		path: String!
 		timestamp: String!
-		ADC: ADC
-		PWM: PWM
+		PortData: String
 	}
 
 	input OpenOptions {
@@ -52,8 +51,8 @@ export const typeDefs = gql`
 	type Query {
 		portList: [PortInfo]
 		isPortOpen(path: String!): Boolean
-		dataBuffer(path: String!): [Data]
-		currentData(path: String!): Data
+		dataBuffer(path: String!): [PortData]
+		currentData(path: String!): PortData
 		messages: [Message]
 	}
 
