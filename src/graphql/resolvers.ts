@@ -97,7 +97,7 @@ export const resolvers = {
 					portHistoryDataMap.set(path, new CircularBuffer(MAX_HISTORY_SIZE));
 				}
 
-				parser.on('PortData', (payload: Buffer) => {
+				parser.on('data', (payload: Buffer) => {
 					let currentData: PortData;
 
 					try {
@@ -128,7 +128,7 @@ export const resolvers = {
 
 			});
 
-			await port.open();
+			await port.open(() => {});
 
 			if (allowConsoleLog) {
 				const msg = `Port ${path} is ready`;
@@ -145,7 +145,7 @@ export const resolvers = {
 
 			if (mappedPort !== null) {
 				try {
-					mappedPort.close();
+					mappedPort.close(() => {});
 				} catch (error) {
 					console.log(error);
 					messages.add(error.message, MessageCategories.ERROR);

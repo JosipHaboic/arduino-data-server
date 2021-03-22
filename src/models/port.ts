@@ -8,17 +8,18 @@ export interface PortInfo {
 	productId: string;
 }
 
-// export interface ADC {
-// 	vin: number;
-// 	vout: number;
-// };
+export interface ADC {
+	vin: number;
+	vout: number;
+};
 
-// export interface PWM {
-// 	dutyCycle: number;
-// };
+export interface PWM {
+	dutyCycle: number;
+};
 
 export interface PortData {
 	path: string;
 	timestamp: string;
-	data: any;
+	adc: ADC;
+	pwm: PWM;
 };
