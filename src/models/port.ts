@@ -1,4 +1,4 @@
-export interface Arduino {
+export interface PortInfo {
 	path: string;
 	manufacturer: string;
 	serialNumber: string;
