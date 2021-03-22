@@ -21,12 +21,12 @@ let allowConsoleLog = true;
 
 export const resolvers = {
 	Query: {
-		portList: async (root, args, context): Promise<PortInfo[]> => {
+		portList: async (): Promise<PortInfo[]> => {
 			const portList = await SerialPort.list();
 
 			return portList;
 		},
-		isPortOpen: (root, { path }, context): Boolean => {
+		isPortOpen: ({ path }): Boolean => {
 			try {
 				return portMap.get(path).isOpen;
 				// catch errors in case the port is not in map for some reason
@@ -36,11 +36,11 @@ export const resolvers = {
 				return false;
 			}
 		},
-		messages: (root, args, context) => {
+		messages: () => {
 
 			return messages.all();
 		},
-		dataBuffer: (root, { path }, context) => {
+		dataBuffer: ({ path }) => {
 			if (allowConsoleLog) {
 				console.log(path);
 				console.log(portHistoryDataMap);
@@ -53,7 +53,7 @@ export const resolvers = {
 				return [];
 			}
 		},
-		currentData: (root, { path }, context) => {
+		currentData: ({ path }) => {
 			try {
 
 				return portCurrentDataMap.get(path);
@@ -66,7 +66,7 @@ export const resolvers = {
 		},
 	},
 	Mutation: {
-		openPort: async (root, { path, openOptions, delimiter }, context) => {
+		openPort: async ({ path, openOptions, delimiter }) => {
 
 			const portList = await SerialPort.list();
 			if ((portList.length !== 0) && (path in SerialPort.list())) {
@@ -140,7 +140,7 @@ export const resolvers = {
 
 			return true;
 		},
-		closePort: (root, { path }, context) => {
+		closePort: ({ path }) => {
 			let mappedPort = portMap.get(path);
 
 			if (mappedPort !== null) {
@@ -163,10 +163,10 @@ export const resolvers = {
 
 			return false;
 		},
-		deleteMessage: (root, { id }, context) => {
+		deleteMessage: ({ id }) => {
 			return messages.delete(id);
 		},
-		clearMessages: (root, args, context) => {
+		clearMessages: () => {
 			messages.clear();
 		}
 	},
