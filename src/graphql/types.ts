@@ -11,10 +11,20 @@ export const typeDefs = gql`
 		productId: String
 	}
 
+	type ADC {
+		vin: Float
+		vout: Float
+	}
+
+	type PWM {
+		dutyCycle: Int
+	}
+
 	type PortData {
 		path: String!
 		timestamp: String!
-		data: String!
+		ADC: ADC!
+		PWM: PWM!
 	}
 
 	input OpenOptions {
