@@ -68,7 +68,7 @@ export const resolvers = {
 		openPort: async (root, { path, openOptions, delimiter }, context) => {
 
 			const portList = await SerialPort.list();
-			if ((portList.length !== 0) && (path in SerialPort.list())) {
+			if ((portList.length === 0)) {
 				const warning = `Serial port ${path} not existing or not available.`;
 				messages.add(warning, MessageCategories.WARNING);
 				if (allowConsoleLog) { console.log(warning); }
