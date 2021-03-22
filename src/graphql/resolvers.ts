@@ -101,7 +101,8 @@ export const resolvers = {
 					let currentData: PortData;
 
 					try {
-						currentData = JSON.parse(payload.toString().trim()) as PortData;
+						// currentData = JSON.parse(payload.toString().trim()) as PortData;
+						currentData = {data: payload.toString().trim()} as PortData;
 
 						currentData.path = path;
 						currentData.timestamp = dateTimeFormatter.format(Date.now());
