@@ -3,16 +3,16 @@ import SerialPort, { PortInfo } from 'serialport';
 import CircularBuffer from 'circular-buffer';
 import { v4 as uuidv4 } from 'uuid';
 import { MessageRegister } from '../util';
-import { Data, MessageCategories } from '../models';
+import { PortData, MessageCategories } from '../models';
 import { dateTimeFormatter } from '../util/datetime';
 
 const MAX_HISTORY_SIZE = 32;
 // we can have more than one port open at the same time, so map them by their port path
 let portMap = new Map<String, SerialPortStream>();
-// keeps data records for each open port
-let portHistoryDataMap = new Map<String, CircularBuffer<Data>>();
-// current data incoming from the ports
-let portCurrentDataMap = new Map<String, Data>();
+// keeps PortData records for each open port
+let portHistoryDataMap = new Map<String, CircularBuffer<PortData>>();
+// current PortData incoming from the ports
+let portCurrentDataMap = new Map<String, PortData>();
 // errors and warning register, both have id for easier manipulation
 let messages = new MessageRegister(uuidv4);
 let allowConsoleLog = true;
@@ -97,11 +97,11 @@ export const resolvers = {
 					portHistoryDataMap.set(path, new CircularBuffer(MAX_HISTORY_SIZE));
 				}
 
-				parser.on('data', (payload: Buffer) => {
-					let currentData: Data;
+				parser.on('PortData', (payload: Buffer) => {
+					let currentData: PortData;
 
 					try {
-						currentData = JSON.parse(payload.toString().trim()) as Data;
+						currentData = JSON.parse(payload.toString().trim()) as PortData;
 
 						currentData.path = path;
 						currentData.timestamp = dateTimeFormatter.format(Date.now());
