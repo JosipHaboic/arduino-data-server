@@ -10,7 +10,7 @@ const MAX_HISTORY_SIZE = 32;
 // we can have more than one port open at the same time, so map them by their port path
 let portMap = new Map<String, SerialPortStream>();
 // keeps PortData records for each open port
-let portHistoryDataMap = new Map<String, CircularBuffer<PortData>>();
+let portDataBufferMap = new Map<String, CircularBuffer<PortData>>();
 // current PortData incoming from the ports
 let portCurrentDataMap = new Map<String, PortData>();
 // errors and warning register, both have id for easier manipulation
@@ -21,7 +21,7 @@ let allowConsoleLog = true;
 
 export const resolvers = {
 	Query: {
-		portList: async (root, args, context): Promise<PortInfo[]> => {
+		portList: async (): Promise<PortInfo[]> => {
 			const portList = await SerialPort.list();
 
 			return portList;
@@ -36,18 +36,18 @@ export const resolvers = {
 				return false;
 			}
 		},
-		messages: (root, args, context) => {
+		messages: () => {
 
 			return messages.all();
 		},
 		dataBuffer: (root, { path }, context) => {
 			if (allowConsoleLog) {
 				console.log(path);
-				console.log(portHistoryDataMap);
+				console.log(portDataBufferMap);
 			}
 
-			if (portHistoryDataMap.has(path)) {
-				return portHistoryDataMap.get(path).toarray();
+			if (portDataBufferMap.has(path)) {
+				return portDataBufferMap.get(path).toarray();
 			} else {
 
 				return [];
@@ -55,7 +55,6 @@ export const resolvers = {
 		},
 		currentData: (root, { path }, context) => {
 			try {
-
 				return portCurrentDataMap.get(path);
 			} catch (error) {
 				if (allowConsoleLog) { console.log(error); }
@@ -77,7 +76,7 @@ export const resolvers = {
 				return false;
 			}
 
-			if (portMap.has(path) && portMap.get(path).isOpen) {
+			if (portMap.has(path) && (portMap.get(path).isOpen)) {
 				const info = `Port ${path} is already opened`;
 
 				if (allowConsoleLog) { console.log(info); }
@@ -93,8 +92,8 @@ export const resolvers = {
 
 			port.on('open', () => {
 
-				if (!portHistoryDataMap.has(port)) {
-					portHistoryDataMap.set(path, new CircularBuffer(MAX_HISTORY_SIZE));
+				if (!portDataBufferMap.has(port)) {
+					portDataBufferMap.set(path, new CircularBuffer(MAX_HISTORY_SIZE));
 				}
 
 				parser.on('data', (payload: Buffer) => {
@@ -102,14 +101,13 @@ export const resolvers = {
 
 					try {
 						currentData = JSON.parse(payload.toString().trim()) as PortData;
-
 						currentData.path = path;
 						currentData.timestamp = dateTimeFormatter.format(Date.now());
 
 						portCurrentDataMap.set(path, currentData);
-						let historyData: CircularBuffer = portHistoryDataMap.get(path);
+						let historyData: CircularBuffer = portDataBufferMap.get(path);
 						historyData.push(currentData);
-						portHistoryDataMap.set(path, historyData);
+						portDataBufferMap.set(path, historyData);
 
 						return true;
 
@@ -166,7 +164,7 @@ export const resolvers = {
 		deleteMessage: (root, { id }, context) => {
 			return messages.delete(id);
 		},
-		clearMessages: (root, args, context) => {
+		clearMessages: () => {
 			messages.clear();
 		}
 	},
