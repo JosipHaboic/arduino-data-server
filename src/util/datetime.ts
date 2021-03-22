@@ -8,6 +8,7 @@ const dateTimeFormatterOptions = {
 	minute: 'numeric',
 	second: 'numeric',
 	hour12: false,
-};
+} as Intl.DateTimeFormatOptions;
 
+// tslint:disable-next-line
 export const dateTimeFormatter = new Intl.DateTimeFormat('hr-HR', dateTimeFormatterOptions);
