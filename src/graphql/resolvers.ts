@@ -10,7 +10,7 @@ const MAX_HISTORY_SIZE = 32;
 // we can have more than one port open at the same time, so map them by their port path
 let portMap = new Map<String, SerialPortStream>();
 // keeps PortData records for each open port
-let portHistoryDataMap = new Map<String, CircularBuffer<PortData>>();
+let portDataBufferMap = new Map<String, CircularBuffer<PortData>>();
 // current PortData incoming from the ports
 let portCurrentDataMap = new Map<String, PortData>();
 // errors and warning register, both have id for easier manipulation
@@ -43,11 +43,11 @@ export const resolvers = {
 		dataBuffer: ({ path }) => {
 			if (allowConsoleLog) {
 				console.log(path);
-				console.log(portHistoryDataMap);
+				console.log(portDataBufferMap);
 			}
 
-			if (portHistoryDataMap.has(path)) {
-				return portHistoryDataMap.get(path).toarray();
+			if (portDataBufferMap.has(path)) {
+				return portDataBufferMap.get(path).toarray();
 			} else {
 
 				return [];
@@ -93,8 +93,8 @@ export const resolvers = {
 
 			port.on('open', () => {
 
-				if (!portHistoryDataMap.has(port)) {
-					portHistoryDataMap.set(path, new CircularBuffer(MAX_HISTORY_SIZE));
+				if (!portDataBufferMap.has(port)) {
+					portDataBufferMap.set(path, new CircularBuffer(MAX_HISTORY_SIZE));
 				}
 
 				parser.on('PortData', (payload: Buffer) => {
@@ -107,9 +107,9 @@ export const resolvers = {
 						currentData.timestamp = dateTimeFormatter.format(Date.now());
 
 						portCurrentDataMap.set(path, currentData);
-						let historyData: CircularBuffer = portHistoryDataMap.get(path);
+						let historyData: CircularBuffer = portDataBufferMap.get(path);
 						historyData.push(currentData);
-						portHistoryDataMap.set(path, historyData);
+						portDataBufferMap.set(path, historyData);
 
 						return true;
 
