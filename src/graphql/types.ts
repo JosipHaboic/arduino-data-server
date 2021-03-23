@@ -50,8 +50,9 @@ export const typeDefs = gql`
 	}
 
 	type Query {
-		portList: [PortInfo]
+		listPorts: [PortInfo]
 		isPortOpen(path: String!): Boolean
+		listOpenPorts: [String]
 		dataBuffer(path: String!): [PortData]
 		currentData(path: String!): PortData
 		messages: [Message]

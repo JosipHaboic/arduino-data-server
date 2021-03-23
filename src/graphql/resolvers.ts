@@ -21,7 +21,7 @@ let allowConsoleLog = true;
 
 export const resolvers = {
 	Query: {
-		portList: async (): Promise<PortInfo[]> => {
+		listPorts: async (): Promise<PortInfo[]> => {
 			const portList = await SerialPort.list();
 
 			return portList;
@@ -35,6 +35,15 @@ export const resolvers = {
 
 				return false;
 			}
+		},
+		listOpenPorts: () => {
+			let openPortsList = new Array<string>();
+			for (const key in portMap.keys()) {
+				if(portMap.get(key).isOpen) {
+					openPortsList.push(key);
+				}
+			}
+			return openPortsList;
 		},
 		messages: () => {
 

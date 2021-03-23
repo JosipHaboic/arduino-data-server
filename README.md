@@ -18,7 +18,7 @@ Examples:
 
 ``` bash
 # Write your query or mutation here
-query { portList {path}}
+query { listPorts {path}}
 # query {isPortOpen(path: "COM5")}
 # query {dataBuffer(path: "COM5") {ADC {vin, vout}, PWM {dutyCycle}}}
 # query { currentData(path: "COM5") {ADC {vin, vout}, PWM {dutyCycle}}}
