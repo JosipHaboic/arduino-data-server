@@ -37,13 +37,9 @@ export const resolvers = {
 			}
 		},
 		listOpenPorts: () => {
-			let openPortsList = new Array<string>();
-			for (const key in portMap.keys()) {
-				if(portMap.get(key).isOpen) {
-					openPortsList.push(key);
-				}
-			}
-			return openPortsList;
+			return [...portMap.keys()].filter((key) => {
+				return portMap.get(key).isOpen;
+			});
 		},
 		messages: () => {
 
@@ -139,7 +135,9 @@ export const resolvers = {
 
 			if (allowConsoleLog) {
 				const msg = `Port ${path} is ready`;
-				console.log(msg);
+				if (allowConsoleLog) {
+					console.log(msg);
+				}
 				messages.add(msg, MessageCategories.INFO);
 			}
 

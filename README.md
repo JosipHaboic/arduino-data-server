@@ -19,6 +19,7 @@ Examples:
 ``` bash
 # Write your query or mutation here
 query { listPorts {path}}
+# query { listOpenPorts }
 # query {isPortOpen(path: "COM5")}
 # query {dataBuffer(path: "COM5") {ADC {vin, vout}, PWM {dutyCycle}}}
 # query { currentData(path: "COM5") {ADC {vin, vout}, PWM {dutyCycle}}}
