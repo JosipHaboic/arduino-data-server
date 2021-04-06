@@ -114,7 +114,6 @@ export const resolvers = {
 				});
 
 				parser.on('error', (error) => {
-					console.log(error);
 					messages.add(error.message, MessageCategories.ERROR);
 				});
 
@@ -137,7 +136,6 @@ export const resolvers = {
 				try {
 					mappedPort.close(() => {});
 				} catch (error) {
-					console.log(error);
 					messages.add(error.message, MessageCategories.ERROR);
 
 					return false;
@@ -145,7 +143,6 @@ export const resolvers = {
 				}
 
 				const msg = `Port ${path} is closed`;
-				console.log(msg);
 				messages.add(msg, MessageCategories.INFO);
 
 				return true;
