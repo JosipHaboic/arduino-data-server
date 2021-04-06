@@ -26,9 +26,3 @@ query { listPorts {path}}
 # mutation { openPort(path:"COM5", openOptions: {baudRate: 9600}, delimiter: "\r\n")}
 # mutation { closePort(path:"COM5")}
 ```
-
-## Operations supported by GraphQL backend
-
-* List ports
-* Data stream to the PC from arduino
-* Data history

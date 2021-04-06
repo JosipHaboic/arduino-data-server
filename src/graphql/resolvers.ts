@@ -15,7 +15,6 @@ let portDataBufferMap = new Map<String, CircularBuffer<PortData>>();
 let portCurrentDataMap = new Map<String, PortData>();
 // errors and warning register, both have id for easier manipulation
 let messages = new MessageRegister(uuidv4);
-let allowConsoleLog = true;
 
 
 
@@ -46,11 +45,6 @@ export const resolvers = {
 			return messages.all();
 		},
 		dataBuffer: (root, { path }, context) => {
-			if (allowConsoleLog) {
-				console.log(path);
-				console.log(portDataBufferMap);
-			}
-
 			if (portDataBufferMap.has(path)) {
 				return portDataBufferMap.get(path).toarray();
 			} else {
@@ -62,7 +56,6 @@ export const resolvers = {
 			try {
 				return portCurrentDataMap.get(path);
 			} catch (error) {
-				if (allowConsoleLog) { console.log(error); }
 				messages.add(error.message, MessageCategories.ERROR);
 
 				return null;
@@ -76,15 +69,12 @@ export const resolvers = {
 			if ((portList.length === 0)) {
 				const warning = `Serial port ${path} not existing or not available.`;
 				messages.add(warning, MessageCategories.WARNING);
-				if (allowConsoleLog) { console.log(warning); }
 
 				return false;
 			}
 
 			if (portMap.has(path) && (portMap.get(path).isOpen)) {
 				const info = `Port ${path} is already opened`;
-
-				if (allowConsoleLog) { console.log(info); }
 				messages.add(info, MessageCategories.INFO);
 
 				return true;
@@ -117,7 +107,6 @@ export const resolvers = {
 						return true;
 
 					} catch (error) {
-						if (allowConsoleLog) { console.log(error); }
 						messages.add(error.message, MessageCategories.DEBUG);
 
 						return false;
@@ -133,13 +122,9 @@ export const resolvers = {
 
 			await port.open(() => {});
 
-			if (allowConsoleLog) {
-				const msg = `Port ${path} is ready`;
-				if (allowConsoleLog) {
-					console.log(msg);
-				}
-				messages.add(msg, MessageCategories.INFO);
-			}
+
+			const msg = `Port ${path} is open`;
+			messages.add(msg, MessageCategories.INFO);
 
 			portMap.set(path, port);
 
